@@ -189,14 +189,22 @@ export function loadNotice({ title = "Collection not loaded", message, onRetry, 
 
 /* ---------- Detail ---------- */
 
+const SELECT_KEYS = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ", "Home", "End"]);
+
 export function statusSwitch({ name, value, legend = "Listening status", disabled = false, busy = false, onChange } = {}) {
   return h("fieldset.status-switch", { "aria-busy": busy ? "true" : null },
     h("legend", {}, legend),
     h("div.status-switch__track", {}, STATUSES.map((s) => h("label.status-switch__option", {},
       // aria-disabled (not disabled) keeps focus on the chosen option while pending.
       h("input", { type: "radio", name, value: s, checked: s === value, "aria-disabled": disabled ? "true" : null,
+        // While pending, block pointer and keyboard (arrows/Space) selection and
+        // restore the committed option if the browser changes it anyway.
         onclick: (e) => { if (disabled) e.preventDefault(); },
-        onchange: (e) => onChange?.(s, e.currentTarget) }),
+        onkeydown: (e) => { if (disabled && SELECT_KEYS.has(e.key)) e.preventDefault(); },
+        onchange: (e) => {
+          if (!disabled) return onChange?.(s, e.currentTarget);
+          for (const r of e.currentTarget.closest(".status-switch").querySelectorAll("input")) r.checked = r.value === value;
+        } }),
       h("span", {}, s)))));
 }
 
