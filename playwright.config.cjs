@@ -1,0 +1,2 @@
+const {defineConfig}=require('@playwright/test');
+module.exports=defineConfig({testDir:'tests/browser',use:{baseURL:process.env.TEST_BASE_URL||'http://127.0.0.1:4175',viewport:{width:1366,height:800}},webServer:{command:'node server/app.mjs',url:'http://127.0.0.1:4175/health',env:{PORT:'4175',CRATE_DB:process.env.TEST_DB||'/tmp/crate-browser-test.sqlite'},reuseExistingServer:false},reporter:'list'});

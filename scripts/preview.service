@@ -1,0 +1,11 @@
+[Unit]
+Description=Crate project preview
+[Service]
+WorkingDirectory=<retained-checkout>
+ExecStart=<absolute-node-path> server/app.mjs
+Environment=HOST=127.0.0.1
+Environment=PORT=4174
+Restart=on-failure
+RestartSec=2s
+[Install]
+WantedBy=default.target
