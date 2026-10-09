@@ -1,0 +1,198 @@
+/* Crate design tokens — the single source for color, type, space and motion.
+   Components reference only these custom properties. Theme follows the system
+   unless <html data-theme="light|dark"> pins it. */
+
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url(../fonts/instrument-sans-latin-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url(../fonts/instrument-sans-latin-ext-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(../fonts/instrument-serif-latin-400-normal.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(../fonts/instrument-serif-latin-ext-400-normal.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src: url(../fonts/instrument-serif-latin-400-italic.woff2) format("woff2");
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* Type */
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+  --text-xs: 0.78125rem;   /* 12.5 — tags, counters */
+  --text-sm: 0.875rem;     /* 14 — metadata, labels */
+  --text-md: 0.9375rem;    /* 15 — card titles, controls */
+  --text-body: 1rem;       /* 16 — notes, inputs */
+  --text-lg: 1.25rem;      /* 20 — panel artist */
+  --text-xl: 1.75rem;      /* 28 — wordmark, editor heading */
+  --text-2xl: 2.5rem;      /* 40 — detail title */
+  --text-3xl: 3.25rem;     /* 52 — collection heading */
+  --leading-tight: 1.08;
+  --leading-snug: 1.3;
+  --leading-body: 1.55;
+
+  /* Space (4px base) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-14: 3.5rem;
+
+  /* Shape */
+  --radius-sleeve: 3px;
+  --radius-control: 8px;
+  --radius-pill: 999px;
+  --touch: 44px;
+  --panel-width: 440px;
+  --card-min: 168px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 140ms;
+  --dur-med: 260ms;
+  --dur-slow: 480ms;
+
+  /* Light — warm paper under a reading lamp */
+  --bg: #f2ede3;
+  --surface: #fbf8f2;
+  --surface-sunk: #e8e1d3;
+  --surface-hover: #ebe4d6;
+  --ink: #1c1915;
+  --ink-2: #574f45;
+  --ink-3: #6b6257;
+  --line: #d8cfbf;
+  --line-strong: #b9ad99;
+  --accent: #c23d18;
+  --accent-hover: #a83312;
+  --accent-ink: #fff8f1;
+  --accent-soft: #f6dccf;
+  --focus: #c23d18;
+  --danger: #b0261b;
+  --danger-soft: #f7dcd6;
+  --scrim: rgb(28 25 21 / 0.42);
+  --shadow-sleeve: 0 1px 1px rgb(40 30 20 / 0.08), 0 6px 14px -6px rgb(40 30 20 / 0.32);
+  --shadow-panel: -12px 0 32px -18px rgb(40 30 20 / 0.35);
+  --disc: #191714;
+  --disc-rim: transparent;
+  --disc-groove: #2c2925;
+  --skeleton: #e3dccd;
+  --skeleton-shine: #ece6da;
+
+  --status-want: #8a5f0e;
+  --status-want-soft: #f2e2bb;
+  --status-listening: #c23d18;
+  --status-listening-soft: #f6dccf;
+  --status-heard: #2c5b43;
+  --status-heard-soft: #d8e6da;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14120f;
+    --surface: #1d1a16;
+    --surface-sunk: #0e0c0a;
+    --surface-hover: #26221d;
+    --ink: #f1ebdf;
+    --ink-2: #b8ad9c;
+    --ink-3: #a29785;
+    --line: #332e27;
+    --line-strong: #4d463c;
+    --accent: #ff7a4c;
+    --accent-hover: #ff9268;
+    --accent-ink: #1d0d06;
+    --accent-soft: #3d2117;
+    --focus: #ff9268;
+    --danger: #ff8a7a;
+    --danger-soft: #3c1a16;
+    --scrim: rgb(0 0 0 / 0.58);
+    --shadow-sleeve: 0 1px 1px rgb(0 0 0 / 0.4), 0 8px 18px -8px rgb(0 0 0 / 0.7);
+    --shadow-panel: -12px 0 32px -18px rgb(0 0 0 / 0.8);
+    --disc: #0a0908;
+    --disc-groove: #26221d;
+    --disc-rim: #4d463c;
+    --skeleton: #24201b;
+    --skeleton-shine: #2d2822;
+    --status-want: #e6c06d;
+    --status-want-soft: #3a2f16;
+    --status-listening: #ff7a4c;
+    --status-listening-soft: #3d2117;
+    --status-heard: #8fc8a6;
+    --status-heard-soft: #1b3226;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #14120f;
+  --surface: #1d1a16;
+  --surface-sunk: #0e0c0a;
+  --surface-hover: #26221d;
+  --ink: #f1ebdf;
+  --ink-2: #b8ad9c;
+  --ink-3: #a29785;
+  --line: #332e27;
+  --line-strong: #4d463c;
+  --accent: #ff7a4c;
+  --accent-hover: #ff9268;
+  --accent-ink: #1d0d06;
+  --accent-soft: #3d2117;
+  --focus: #ff9268;
+  --danger: #ff8a7a;
+  --danger-soft: #3c1a16;
+  --scrim: rgb(0 0 0 / 0.58);
+  --shadow-sleeve: 0 1px 1px rgb(0 0 0 / 0.4), 0 8px 18px -8px rgb(0 0 0 / 0.7);
+  --shadow-panel: -12px 0 32px -18px rgb(0 0 0 / 0.8);
+  --disc: #0a0908;
+  --disc-groove: #26221d;
+  --disc-rim: #4d463c;
+  --skeleton: #24201b;
+  --skeleton-shine: #2d2822;
+  --status-want: #e6c06d;
+  --status-want-soft: #3a2f16;
+  --status-listening: #ff7a4c;
+  --status-listening-soft: #3d2117;
+  --status-heard: #8fc8a6;
+  --status-heard-soft: #1b3226;
+  color-scheme: dark;
+}
+:root[data-theme="light"] { color-scheme: light; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-med: 0ms;
+    --dur-slow: 0ms;
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "fixture": "crate-albums",
+  "version": 1,
+  "owner": "UI Designer",
+  "note": "Fictional albums and artists with original SVG artwork. Builder seeds these eight records exactly once; cover is optional presentation metadata (null for user-created albums, which receive a generated typographic sleeve).",
+  "albums": [
+    {
+      "key": "salt-lines",
+      "title": "Salt Lines",
+      "artist": "Marrow Coast",
+      "status": "Heard",
+      "notes": "Recorded in a boathouse on the Firth over one winter. The tape hiss is part of the arrangement.\n\nBest track: “Ebb Register”. Play it loud with the window open.",
+      "cover": "/covers/salt-lines.svg"
+    },
+    {
+      "key": "night-shift-observatory",
+      "title": "Night Shift at the Observatory",
+      "artist": "Ilse Varga Quartet",
+      "status": "Listening",
+      "notes": "Side A is patient, almost too patient. Side B opens up when the vibraphone enters at 4:10.",
+      "cover": "/covers/night-shift-observatory.svg"
+    },
+    {
+      "key": "concrete-orchard",
+      "title": "Concrete Orchard",
+      "artist": "Tomoko Arai & The Parallels",
+      "status": "Want to hear",
+      "notes": "Found the sleeve in a Kōenji shop window. Heard it is city pop filtered through brutalist field recordings.",
+      "cover": "/covers/concrete-orchard.svg"
+    },
+    {
+      "key": "second-weather",
+      "title": "Second Weather",
+      "artist": "Dun Lavery",
+      "status": "Heard",
+      "notes": "Synths that sound like barometric pressure. Better on headphones than speakers.",
+      "cover": "/covers/second-weather.svg"
+    },
+    {
+      "key": "halfway-to-pelagos",
+      "title": "Halfway to Pelagos",
+      "artist": "Ondine Brass Ensemble",
+      "status": "Listening",
+      "notes": "Liner notes say it was written for a ferry crossing. Keep notes literal: <brass> & <tide> are not tags.",
+      "cover": "/covers/halfway-to-pelagos.svg"
+    },
+    {
+      "key": "low-frequency-garden",
+      "title": "Low Frequency Garden",
+      "artist": "Amara Okafor-Reyes",
+      "status": "Want to hear",
+      "notes": "",
+      "cover": "/covers/low-frequency-garden.svg"
+    },
+    {
+      "key": "long-room-sessions",
+      "title": "The Long Room Sessions, Vol. II: Recorded Live at the Harbour Assembly Hall, Winter Residency",
+      "artist": "The Calder Fielding Chamber Orchestra & Choir of St. Brennan’s",
+      "status": "Want to hear",
+      "notes": "Two discs. Disc one is the residency programme as performed; disc two collects the encores and a rehearsal take of the Brennan Canticle that was never meant to be released.\n\nMy copy has a small seam split on the spine.",
+      "cover": "/covers/long-room-sessions.svg"
+    },
+    {
+      "key": "o-fennic",
+      "title": "Ø",
+      "artist": "Fennic",
+      "status": "Heard",
+      "notes": "Eleven minutes. One idea.",
+      "cover": "/covers/o-fennic.svg"
+    }
+  ]
+}
