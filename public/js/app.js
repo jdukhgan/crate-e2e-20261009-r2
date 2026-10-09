@@ -103,7 +103,7 @@ async function changeStatus(status, input) {
   if (!album || state.pending || status === album.status) return;
   beginMutation("status");
   Object.assign(state, { pending: "status", pendingStatus: status, statusMessage: "", statusError: false });
-  render({ keepFocus: `input[name="status-${album.id}"][value="${status}"]` });
+  render({ keepFocus: `input[name="status-${album.id}"][value="${status}"]`, preserveDetail: true });
   try {
     const updated = await store.update(album.id, { status });
     commitAlbum(updated);
@@ -117,7 +117,7 @@ async function changeStatus(status, input) {
     state.pendingStatus = null;
   }
   focusAfterRender = `input[name="status-${album.id}"][value="${status}"]`;
-  render();
+  render({ preserveDetail: true });
 }
 
 async function refreshLists() {
@@ -282,7 +282,7 @@ function panelBody() {
   });
 }
 
-function render({ keepFocus } = {}) {
+function render({ keepFocus, preserveDetail = false } = {}) {
   const panel = panelBody();
   const busy = Boolean(state.pending);
   root.dataset.pending = busy ? "true" : "false";
@@ -310,7 +310,21 @@ function render({ keepFocus } = {}) {
   const activeSelector = keepFocus || (document.activeElement?.id ? `#${CSS.escape(document.activeElement.id)}` : document.activeElement?.name ? `input[name="${document.activeElement.name}"][value="${document.activeElement.value}"]` : null);
   const selection = document.activeElement?.selectionStart;
   const selectionEnd = document.activeElement?.selectionEnd;
-  root.replaceChildren(app);
+  const existingDetail = root.querySelector(".detail");
+  if (preserveDetail && existingDetail && panel?.classList.contains("detail")) {
+    // Keep the open panel, scroll container and artwork mounted. Replacing the
+    // workspace replays panel-in/fade-in on both pending and settled renders.
+    root.querySelector(".collection").replaceWith(app.querySelector(".collection"));
+    if (busy) existingDetail.setAttribute("aria-busy", "true");
+    else existingDetail.removeAttribute("aria-busy");
+    const oldChildren = [...existingDetail.children];
+    [...panel.children].forEach((child, index) => {
+      if (child.classList.contains("detail__art")) {
+        // Updating the existing sleeve lets its authored CSS transition run.
+        oldChildren[index].querySelector(".sleeve").dataset.status = currentAlbum().status;
+      } else oldChildren[index].replaceWith(child);
+    });
+  } else root.replaceChildren(app);
   const target = focusAfterRender || activeSelector;
   focusAfterRender = null;
   if (target) {

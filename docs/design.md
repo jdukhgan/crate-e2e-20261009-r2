@@ -57,3 +57,6 @@ Replace `FixtureStore` with `fetch` calls to the agreed `/api/albums` endpoints.
 ## Foundation commands
 `npm run foundation` (or `node scripts/foundation-server.mjs`; `PORT` and `HOST` are optional) → `http://127.0.0.1:4173/foundation.html?scenario=<name>&theme=light|dark`.
 Scenarios: populated, filtered, search, no-results, empty, loading, load-error, stale-error, detail, detail-long, detail-empty-notes, status-pending, status-error, delete-confirm, missing, edit, create, editor-invalid, save-pending, save-error. A harness control strip switches the scenario, the next-request failure mode and the theme.
+
+## Status transition continuity
+Status saves keep the already-open panel, its scroll container and album artwork mounted through pending, success and failure. The record slides only after a successful save. Panel/scrim entrance animations belong to opening a panel, not a status update. Motion-enabled regression coverage checks both themes at desktop, tablet and phone sizes; settled screenshots alone do not verify this behavior.
