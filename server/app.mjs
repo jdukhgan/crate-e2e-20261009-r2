@@ -41,7 +41,7 @@ export function createApp(db) {
           const status=url.searchParams.get('status')||'';
           if(status && !STATUSES.includes(status)) return error(res,422,'invalid',ERROR_COPY.invalid,{status:'Choose a valid listening status.'});
           const q=(url.searchParams.get('q')||'').trim().toLocaleLowerCase();
-          const rows=db.prepare('SELECT * FROM albums ORDER BY id DESC').all().filter(a=>(!status||a.status===status)&&(!q||a.title.toLocaleLowerCase().includes(q)||a.artist.toLocaleLowerCase().includes(q)));
+          const rows=db.prepare('SELECT * FROM albums ORDER BY id ASC').all().filter(a=>(!status||a.status===status)&&(!q||a.title.toLocaleLowerCase().includes(q)||a.artist.toLocaleLowerCase().includes(q)));
           return json(res,200,rows);
         }
         if(!['POST','PATCH','DELETE'].includes(req.method)|| (req.method==='POST'?id:!id)) return error(res,405,'method_not_allowed','This action is unavailable.');

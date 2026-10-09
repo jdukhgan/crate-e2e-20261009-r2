@@ -1,6 +1,4 @@
-// Foundation harness: drives the real components against an in-memory fixture
-// store with controllable latency and failures. Not the production app — the
-// Builder replaces FixtureStore with API calls and keeps the view contract.
+// Integrated controller: shared Designer components backed by the SQLite API.
 import { validateAlbum, ERROR_COPY } from "./contract.js";
 import {
   h, icon, albumGrid, skeletonGrid, searchField, statusFilter, emptyState, loadNotice,
@@ -88,7 +86,8 @@ function beginMutation(kind) {
   state.pending = kind;
 }
 function commitAlbum(saved) {
-  state.all = [saved, ...state.all.filter(a => a.id !== saved.id)];
+  const exists = state.all.some(a => a.id === saved.id);
+  state.all = exists ? state.all.map(a => a.id === saved.id ? saved : a) : [...state.all, saved];
   filterCommitted();
 }
 function filterCommitted() {

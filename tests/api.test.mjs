@@ -11,6 +11,7 @@ test('API boundaries, CRUD, combined Unicode search, and seed-once restart',asyn
  const req=async(path='',method='GET',data)=>{const res=await fetch(base+'/api/albums'+path,{method,headers:{'content-type':'application/json'},body:data===undefined?undefined:JSON.stringify(data)});return {status:res.status,data:await res.json()};};
  try {
   assert.equal((await req()).data.length,8);
+  assert.equal((await req()).data[0].title,'Salt Lines');
   const input={title:'  🎶'.repeat(1)+'🎶'.repeat(159)+'  ',artist:'Étude',status:'Want to hear',notes:'  <script>alert(1)</script>\n🎶  '};
   const created=await req('','POST',input);assert.equal(created.status,201);const id=created.data.id;
   assert.equal([...created.data.title].length,160);assert.equal(created.data.notes,input.notes);
