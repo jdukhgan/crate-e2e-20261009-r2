@@ -4,6 +4,7 @@ import {mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {openDatabase,createApp} from '../server/app.mjs';
+import {ERROR_COPY} from '../public/js/contract.js';
 test('API boundaries, CRUD, combined Unicode search, and seed-once restart',async()=>{
  const dir=mkdtempSync(join(tmpdir(),'crate-api-')),path=join(dir,'albums.sqlite');
  let db=openDatabase(path),server=createApp(db);await new Promise(r=>server.listen(0,'127.0.0.1',r));
@@ -40,3 +41,29 @@ test('JSON request decoding preserves Unicode split across transport chunks',asy
   assert.equal(data.title,'🎶');
  } finally {await new Promise(r=>app.close(r));db.close();rmSync(dir,{recursive:true,force:true});}
 });
+
+for (const patch of [{status:'Heard'}, {}]) {
+ test(`PATCH returns not_found after deletion during body consumption: ${JSON.stringify(patch)}`,async()=>{
+  const dir=mkdtempSync(join(tmpdir(),'crate-patch-race-'));
+  const db=openDatabase(join(dir,'albums.sqlite')),app=createApp(db);
+  let releaseBody,bodyStarted;
+  const started=new Promise(resolve=>{bodyStarted=resolve;});
+  const released=new Promise(resolve=>{releaseBody=resolve;});
+  const req={url:'/api/albums/1',method:'PATCH',headers:{'content-type':'application/json'},
+   async *[Symbol.asyncIterator]() {bodyStarted();await released;yield Buffer.from(JSON.stringify(patch));}};
+  let status,headers;
+  const response=new Promise(resolve=>{
+   const res={writeHead(code,value){status=code;headers=value;return this;},end(body){resolve(body);}};
+   app.emit('request',req,res);
+  });
+  try {
+   await started;
+   db.prepare('DELETE FROM albums WHERE id=?').run(1);
+   releaseBody();
+   const body=await response;
+   assert.equal(status,404);
+   assert.equal(headers['content-type'],'application/json; charset=utf-8');
+   assert.deepEqual(JSON.parse(body),{error:{code:'not_found',message:ERROR_COPY.notFound}});
+  } finally {releaseBody();await response;app.close();db.close();rmSync(dir,{recursive:true,force:true});}
+ });
+}

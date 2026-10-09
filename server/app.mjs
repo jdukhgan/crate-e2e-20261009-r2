@@ -56,6 +56,8 @@ export function createApp(db) {
         if(!input||typeof input!=='object'||Array.isArray(input)) return error(res,422,'invalid',ERROR_COPY.invalid);
         const check=validateAlbum(input,{partial:req.method==='PATCH'});
         if(!check.ok) return error(res,422,'invalid',ERROR_COPY.invalid,check.fields);
+        // Body consumption yields to other requests; the album may have been deleted.
+        if(id && !db.prepare('SELECT id FROM albums WHERE id=?').get(id)) return error(res,404,'not_found',ERROR_COPY.notFound);
         let savedId=id;
         if(req.method==='POST') {const a=check.value;savedId=Number(db.prepare('INSERT INTO albums(title,artist,status,notes) VALUES(?,?,?,?)').run(a.title,a.artist,a.status,a.notes).lastInsertRowid);}
         else {const entries=Object.entries(check.value);if(entries.length) db.prepare(`UPDATE albums SET ${entries.map(([k])=>`${k}=?`).join(',')} WHERE id=?`).run(...entries.map(([,v])=>v),id);}
