@@ -7,7 +7,7 @@ Run `npm start`, then open http://127.0.0.1:4174. `HOST` and `PORT` configure th
 Run `npm test` for isolated API, Unicode validation, CRUD, combined search/filter, restart persistence and seed-once checks. On the prepared project worker, run the repeatable browser regression command:
 
 ```sh
-TEST_DB=$(mktemp -u /tmp/crate-browser-XXXXXX.sqlite) node ~/.agents/skills/jlab-dev-v1-implementation/browser-test.cjs --config playwright.config.cjs
+npm run test:browser
 ```
 
 The browser harness starts and stops its own isolated instance on port 4175. Its checks cover pending deduplication, failed save/retry, retained drafts/lists/focus, literal notes, committed mutations with failed refresh, status retry, redraw and stale edits. The test database is disposable; never use the retained preview database. Independent verification owns the full responsive/theme and accessibility acceptance.

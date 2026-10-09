@@ -122,11 +122,13 @@ async function changeStatus(status, input) {
 }
 
 async function refreshLists() {
+  const version = ++loadVersion;
   try {
     const [all, visible] = await Promise.all([store.list(), store.list({ q: state.query, status: state.status })]);
+    if (version !== loadVersion) return;
     Object.assign(state, { all, visible, loadError: "" });
   } catch (err) {
-    state.loadError = err.message;
+    if (version === loadVersion) state.loadError = err.message;
   }
 }
 
@@ -198,6 +200,8 @@ async function confirmDelete() {
 
 let searchTimer;
 function onSearch(value) {
+  if (state.pending) return;
+  ++loadVersion;
   state.query = value;
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => load({ announceResult: true }), 220);
@@ -230,13 +234,13 @@ function counts() {
 function collectionBody() {
   if (state.loading) return [h("p.visually-hidden", { role: "status" }, "Loading your collection…"), skeletonGrid(8)];
   const parts = [];
-  if (state.loadError) parts.push(loadNotice({ title: state.loaded ? "Collection not refreshed" : "Collection not loaded", message: state.loadError, onRetry: () => load({ announceResult: true }) }));
+  if (state.loadError) parts.push(loadNotice({ title: state.loaded ? "Collection not refreshed" : "Collection not loaded", message: state.loadError, pending: Boolean(state.pending), onRetry: () => load({ announceResult: true }) }));
   if (!state.loaded) return parts;
   if (state.all.length === 0) parts.push(emptyState({ kind: "collection", onAdd: (e) => open({ type: "create", draft: blankDraft(), errors: {} }, "add") }));
   else if (state.visible.length === 0) parts.push(emptyState({
     kind: "results", query: state.query, status: state.status,
-    onClearSearch: () => { state.query = ""; focusAfterRender = "#album-search"; load({ announceResult: true }); },
-    onShowAll: () => { state.status = ""; focusAfterRender = 'input[name="status-filter"]:checked'; load({ announceResult: true }); },
+    onClearSearch: () => { if (state.pending) return; state.query = ""; focusAfterRender = "#album-search"; load({ announceResult: true }); },
+    onShowAll: () => { if (state.pending) return; state.status = ""; focusAfterRender = 'input[name="status-filter"]:checked'; load({ announceResult: true }); },
   }));
   else parts.push(albumGrid(state.visible, {
     currentId: state.panel?.id, disabled: Boolean(state.pending),
@@ -296,7 +300,7 @@ function render({ keepFocus } = {}) {
             onclick: () => open({ type: "create", draft: blankDraft(), errors: {} }, "add"),
           }, icon("plus"), h("span", {}, "Add", h("span.btn__label-long", {}, " album"))))),
       h("div.toolbar", {},
-        searchField({ value: state.query, disabled: busy, onInput: onSearch, onClear: () => { state.query = ""; load({ announceResult: true }); } }),
+        searchField({ value: state.query, disabled: busy, onInput: onSearch, onClear: () => { if (state.pending) return; state.query = ""; load({ announceResult: true }); } }),
         statusFilter({ value: state.status, counts: counts(), disabled: busy, onChange: (v) => { state.status = v; load({ announceResult: true }); } })),
       h("p.visually-hidden", { id: "result-count" }, state.loaded ? resultSummary(state.visible.length, state.all.length, state) : ""),
       collectionBody()),

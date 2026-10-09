@@ -35,6 +35,7 @@ export function createApp(db) {
         const match=/^\/api\/albums(?:\/([1-9]\d*))?$/.exec(url.pathname);
         if(!match) return error(res,404,'not_found',ERROR_COPY.notFound);
         const id=match[1]?Number(match[1]):null;
+        if(id !== null && !Number.isSafeInteger(id)) return error(res,404,'not_found',ERROR_COPY.notFound);
         if(req.method==='GET') {
           if(id) {const a=db.prepare('SELECT * FROM albums WHERE id=?').get(id); return a?json(res,200,a):error(res,404,'not_found',ERROR_COPY.notFound);}
           const status=url.searchParams.get('status')||'';
@@ -49,9 +50,9 @@ export function createApp(db) {
         if(id && !db.prepare('SELECT id FROM albums WHERE id=?').get(id)) return error(res,404,'not_found',ERROR_COPY.notFound);
         if(req.method==='DELETE') {db.prepare('DELETE FROM albums WHERE id=?').run(id); return json(res,200,{id});}
         if(!req.headers['content-type']?.startsWith('application/json')) return error(res,415,'invalid','Send album fields as JSON.');
-        let body='',bytes=0;
-        for await(const chunk of req) {bytes+=chunk.length;if(bytes>65536) return error(res,413,'invalid','This album is too large.');body+=chunk;}
-        let input;try{input=JSON.parse(body);}catch{return error(res,400,'invalid','The album could not be read. Try again.');}
+        const chunks=[];let bytes=0;
+        for await(const chunk of req) {bytes+=chunk.length;if(bytes>65536) return error(res,413,'invalid','This album is too large.');chunks.push(chunk);}
+        let input;try{input=JSON.parse(Buffer.concat(chunks).toString("utf8"));}catch{return error(res,400,'invalid','The album could not be read. Try again.');}
         if(!input||typeof input!=='object'||Array.isArray(input)) return error(res,422,'invalid',ERROR_COPY.invalid);
         const check=validateAlbum(input,{partial:req.method==='PATCH'});
         if(!check.ok) return error(res,422,'invalid',ERROR_COPY.invalid,check.fields);

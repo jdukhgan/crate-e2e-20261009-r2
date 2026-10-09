@@ -31,3 +31,11 @@ test('API boundaries, CRUD, combined Unicode search, and seed-once restart',asyn
   await new Promise(r=>server.close(r));db.close();db=openDatabase(path);assert.equal(db.prepare('SELECT count(*) AS n FROM albums').get().n,0);
  } finally {await new Promise(r=>server.close(r));db.close();rmSync(dir,{recursive:true,force:true});}
 });
+test('JSON request decoding preserves Unicode split across transport chunks',async()=>{
+ const {request}=await import('node:http');const dir=mkdtempSync(join(tmpdir(),'crate-chunks-'));const db=openDatabase(join(dir,'albums.sqlite'));const app=createApp(db);await new Promise(r=>app.listen(0,'127.0.0.1',r));
+ try {
+  const bytes=Buffer.from(JSON.stringify({title:'🎶',artist:'A',status:'Heard'}));const split=bytes.indexOf(Buffer.from('🎶'))+2;
+  const data=await new Promise((resolve,reject)=>{const r=request({host:'127.0.0.1',port:app.address().port,path:'/api/albums',method:'POST',headers:{'content-type':'application/json'}},res=>{let body='';res.on('data',c=>body+=c);res.on('end',()=>resolve(JSON.parse(body)));});r.on('error',reject);r.write(bytes.subarray(0,split));setImmediate(()=>r.end(bytes.subarray(split)));});
+  assert.equal(data.title,'🎶');
+ } finally {await new Promise(r=>app.close(r));db.close();rmSync(dir,{recursive:true,force:true});}
+});
